@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 import uuid
 from dataclasses import asdict, dataclass
@@ -44,10 +46,38 @@ def repo_root() -> Path:
 
 
 def esptool_path() -> Path:
-    path = repo_root() / "tools" / "esptool.exe"
-    if not path.exists():
-        raise FileNotFoundError(f"esptool.exe not found at {path}")
-    return path
+    """Resolve the esptool executable.
+
+    Search order:
+    1. Local virtual environment (.venv) created by setup_env.py.
+    2. System PATH (covers globally-installed or conda-environment esptool).
+    3. Bundled tools/esptool.exe as a last-resort fallback.
+    """
+    root = repo_root()
+
+    # 1. Local venv
+    if sys.platform == "win32":
+        venv_esptool = root / ".venv" / "Scripts" / "esptool.exe"
+    else:
+        venv_esptool = root / ".venv" / "bin" / "esptool"
+    if venv_esptool.exists():
+        return venv_esptool
+
+    # 2. System PATH
+    system_esptool = shutil.which("esptool")
+    if system_esptool:
+        return Path(system_esptool)
+
+    # 3. Bundled Windows executable
+    bundled = root / "tools" / "esptool.exe"
+    if bundled.exists():
+        return bundled
+
+    raise FileNotFoundError(
+        "esptool not found. Run 'python setup_env.py' to create a virtual "
+        "environment with esptool installed, or install it manually with "
+        "'pip install esptool'."
+    )
 
 
 def hex_int(value: str) -> int:

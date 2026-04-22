@@ -8,7 +8,18 @@ It does three things:
 1. Erases every `nvs` partition found in the partition table.
 1. Restores a previous backup if something goes wrong.
 
-The tool uses the bundled `tools/esptool.exe`.
+## Setup
+
+Create a local virtual environment and install `esptool` from PyPI:
+
+```powershell
+python setup_env.py
+```
+
+This creates a `.venv` folder and installs the dependencies listed in `requirements.txt`.
+After that, run the tool with the Python interpreter of your choice — it will automatically
+use the `esptool` from `.venv` first, then fall back to any `esptool` already on your PATH,
+and finally to the bundled `tools/esptool.exe` if neither is found.
 
 ## What gets backed up
 
@@ -25,19 +36,19 @@ Backups are written into timestamped folders under `backups/`.
 ### Backup only
 
 ```powershell
-python esp32_nvs_tool.py backup --port COM3
+python esp32_nvs_tool.py backup --port COM3 --baud 115200
 ```
 
 ### Erase NVS with an automatic backup first
 
 ```powershell
-python esp32_nvs_tool.py erase-nvs --port COM3
+python esp32_nvs_tool.py erase-nvs --port COM3 --baud 115200
 ```
 
 ### Restore from a backup folder
 
 ```powershell
-python restore_esp32.py --port COM3 --backup-dir backups\esp32_backup_YYYYMMDD_HHMMSS_xxxxxxxx
+python restore_esp32.py --port COM3 --baud 115200 --backup-dir backups\esp32_backup_YYYYMMDD_HHMMSS_xxxxxxxx
 ```
 
 ### Optional settings
@@ -47,10 +58,10 @@ If your project uses a non-default partition table offset, override it with `--p
 Example:
 
 ```powershell
-python esp32_nvs_tool.py erase-nvs --port COM3 --partition-table-offset 0x9000
+python esp32_nvs_tool.py erase-nvs --port COM3 --baud 115200 --partition-table-offset 0x9000
 ```
 
-You can also pass `--baud` and `--chip` if needed.
+You can also pass `--chip` if needed.
 
 ## Restore details
 
