@@ -14,8 +14,10 @@ This project provides a small Python CLI for ESP32 devices connected over serial
 It does three things:
 
 1. Backs up the flash regions that matter for recovery.
-1. Invalidates PHY calibration data to force RF recalibration on the next boot.
-1. Restores a previous backup if something goes wrong.
+2. Invalidates PHY calibration data to force RF recalibration on the next boot.
+3. Restores a previous backup if something goes wrong.
+
+NOTE: This version runs on Windows, using Powershell or cmd.exe.  I'll get mac/Linux support in a future release.
 
 ## Setup
 
